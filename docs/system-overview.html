@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام الذاكرة الشبيه بالإنسان - دليل شامل</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: #0a0a1a;
+            color: #e0e0e0;
+            line-height: 1.8;
+        }
+
+        /* === Header === */
+        .hero {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 60px 40px;
+            text-align: center;
+            border-bottom: 3px solid #e94560;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(233,69,96,0.05) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .hero h1 {
+            font-size: 2.8em;
+            color: #fff;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .hero .subtitle {
+            font-size: 1.3em;
+            color: #a0a0c0;
+            position: relative;
+        }
+        .hero .badge {
+            display: inline-block;
+            background: #e94560;
+            color: #fff;
+            padding: 5px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 15px;
+            position: relative;
+        }
+
+        /* === Navigation === */
+        .nav {
+            background: #12122a;
+            padding: 15px 40px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #2a2a4a;
+        }
+        .nav a {
+            color: #8888aa;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-size: 0.95em;
+        }
+        .nav a:hover {
+            background: #1a1a3e;
+            color: #e94560;
+        }
+
+        /* === Container === */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* === Section === */
+        .section {
+            margin-bottom: 60px;
+        }
+        .section-title {
+            font-size: 2em;
+            color: #e94560;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2a2a4a;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .section-title .icon {
+            font-size: 1.2em;
+        }
+
+        /* === Architecture Diagram === */
+        .arch-diagram {
+            background: #12122a;
+            border-radius: 16px;
+            padding: 40px;
+            margin: 30px 0;
+            border: 1px solid #2a2a4a;
+            overflow-x: auto;
+        }
+        .arch-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .arch-box {
+            background: #1a1a2e;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid #2a2a4a;
+            transition: all 0.3s;
+        }
+        .arch-box:hover {
+            border-color: #e94560;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(233,69,96,0.2);
+        }
+        .arch-box .box-title {
+            font-size: 1.1em;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .arch-box .box-tech {
+            font-size: 0.85em;
+            color: #e94560;
+            margin-bottom: 8px;
+        }
+        .arch-box .box-desc {
+            font-size: 0.85em;
+            color: #8888aa;
+        }
+        .arch-box.highlight {
+            border-color: #e94560;
+            background: linear-gradient(135deg, #1a1a2e, #2a1a2e);
+        }
+
+        /* === Flow Arrows === */
+        .flow-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .flow-step {
+            background: #1a1a2e;
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid #3a3a5a;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        .flow-arrow {
+            color: #e94560;
+            font-size: 1.5em;
+        }
+
+        /* === Feature Cards === */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 25px;
+        }
+        .feature-card {
+            background: #12122a;
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid #2a2a4a;
+            transition: all 0.3s;
+        }
+        .feature-card:hover {
+            border-color: #e94560;
+            box-shadow: 0 5px 30px rgba(233,69,96,0.15);
+        }
+        .feature-card .card-version {
+            display: inline-block;
+            background: #e94560;
+            color: #fff;
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-bottom: 12px;
+        }
+        .feature-card h3 {
+            color: #fff;
+            margin-bottom: 12px;
+            font-size: 1.2em;
+        }
+        .feature-card p {
+            color: #8888aa;
+            font-size: 0.95em;
+            margin-bottom: 15px;
+        }
+        .feature-card .tech-tag {
+            display: inline-block;
+            background: #1a1a3e;
+            color: #a0a0c0;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.8em;
+            margin: 2px;
+        }
+
+        /* === Equation Box === */
+        .equation-box {
+            background: #0f0f2a;
+            border-right: 4px solid #e94560;
+            padding: 20px 25px;
+            margin: 15px 0;
+            border-radius: 0 12px 12px 0;
+            font-family: 'Courier New', monospace;
+            direction: ltr;
+            text-align: left;
+        }
+        .equation-box .eq-label {
+            color: #e94560;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+        }
+        .equation-box code {
+            color: #66ffaa;
+            font-size: 1.1em;
+        }
+
+        /* === API Table === */
+        .api-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .api-table th {
+            background: #1a1a2e;
+            color: #e94560;
+            padding: 12px 15px;
+            text-align: right;
+            border-bottom: 2px solid #2a2a4a;
+        }
+        .api-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #1a1a2a;
+        }
+        .api-table tr:hover td {
+            background: #12122a;
+        }
+        .method-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            font-family: monospace;
+            direction: ltr;
+        }
+        .method-badge.get { background: #1a4a2a; color: #4ade80; }
+        .method-badge.post { background: #1a2a4a; color: #60a5fa; }
+        .method-badge.delete { background: #4a1a1a; color: #f87171; }
+
+        /* === Memory Types === */
+        .memory-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .memory-type {
+            background: #12122a;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border-top: 3px solid;
+        }
+        .memory-type.episodic { border-color: #60a5fa; }
+        .memory-type.semantic { border-color: #4ade80; }
+        .memory-type.procedural { border-color: #f59e0b; }
+        .memory-type.working { border-color: #a78bfa; }
+        .memory-type.emotional { border-color: #f87171; }
+        .memory-type .mt-name { font-size: 1.1em; color: #fff; margin-bottom: 5px; }
+        .memory-type .mt-desc { font-size: 0.85em; color: #8888aa; }
+
+        /* === Forgetting === */
+        .forget-list {
+            list-style: none;
+            padding: 0;
+        }
+        .forget-list li {
+            background: #12122a;
+            margin: 10px 0;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border-right: 3px solid #e94560;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+        .forget-list .forget-num {
+            background: #e94560;
+            color: #fff;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .forget-list .forget-title {
+            color: #fff;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        .forget-list .forget-desc {
+            color: #8888aa;
+            font-size: 0.9em;
+        }
+
+        /* === Docker === */
+        .docker-services {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .docker-svc {
+            background: #12122a;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #2a2a4a;
+        }
+        .docker-svc .svc-name { color: #fff; font-weight: bold; margin-bottom: 5px; }
+        .docker-svc .svc-image { color: #4ade80; font-size: 0.8em; font-family: monospace; direction: ltr; }
+        .docker-svc .svc-port { color: #8888aa; font-size: 0.8em; margin-top: 3px; }
+        .docker-svc.alpine { border-color: #4ade80; }
+
+        /* === Consolidation Timeline === */
+        .timeline {
+            position: relative;
+            padding-right: 40px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            right: 15px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #2a2a4a;
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+            padding-right: 30px;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            right: -34px;
+            top: 5px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #e94560;
+            border: 3px solid #0a0a1a;
+        }
+        .timeline-item h4 { color: #e94560; margin-bottom: 5px; }
+        .timeline-item p { color: #8888aa; font-size: 0.9em; }
+
+        /* === Connection Diagram === */
+        .connections {
+            background: #12122a;
+            border-radius: 16px;
+            padding: 30px;
+            margin: 20px 0;
+            border: 1px solid #2a2a4a;
+        }
+        .conn-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #1a1a2a;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .conn-from, .conn-to {
+            background: #1a1a2e;
+            padding: 8px 15px;
+            border-radius: 8px;
+            min-width: 150px;
+            text-align: center;
+        }
+        .conn-arrow {
+            color: #e94560;
+            font-size: 1.3em;
+            flex-shrink: 0;
+        }
+        .conn-label {
+            color: #8888aa;
+            font-size: 0.85em;
+            text-align: center;
+            min-width: 200px;
+        }
+
+        /* === Footer === */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #4a4a6a;
+            border-top: 1px solid #1a1a2a;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero -->
+    <div class="hero">
+        <h1>🧠 نظام الذاكرة الشبيه بالإنسان</h1>
+        <div class="subtitle">Human-Like Memory System for AI Agents</div>
+        <div class="badge">مبني على معمارية ACT-R المعرفية</div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav">
+        <a href="#overview">نظرة عامة</a>
+        <a href="#architecture">المعمارية</a>
+        <a href="#memory-types">أنواع الذاكرة</a>
+        <a href="#actr">معادلات ACT-R</a>
+        <a href="#features">المميزات</a>
+        <a href="#forgetting">النسيان</a>
+        <a href="#consolidation">التوحيد</a>
+        <a href="#connections">الروابط</a>
+        <a href="#api">واجهة API</a>
+        <a href="#docker">Docker</a>
+    </div>
+
+    <div class="container">
+
+        <!-- === Overview === -->
+        <div class="section" id="overview">
+            <div class="section-title"><span class="icon">📖</span> نظرة عامة</div>
+            <p style="font-size: 1.1em; color: #a0a0c0; margin-bottom: 20px;">
+                هذا النظام يحاكي طريقة عمل الذاكرة البشرية في وكلاء الذكاء الاصطناعي. بدلاً من قاعدة بيانات عادية تخزن كل شيء بنفس الأهمية، هذا النظام يتعامل مع الذكريات مثل الدماغ البشري تماماً:
+            </p>
+            <ul style="color: #a0a0c0; padding-right: 30px; font-size: 1.05em;">
+                <li style="margin-bottom: 10px;"><strong style="color:#60a5fa;">الذكريات القوية تبقى</strong> — الذكريات التي تُسترجع كثيراً تصبح أقوى</li>
+                <li style="margin-bottom: 10px;"><strong style="color:#f87171;">الذكريات الضعيفة تُنسى</strong> — الذكريات غير المستخدمة تضعف وتختفي تدريجياً</li>
+                <li style="margin-bottom: 10px;"><strong style="color:#4ade80;">المشاعر تؤثر</strong> — الأحداث العاطفية تُحفظ لفترة أطول</li>
+                <li style="margin-bottom: 10px;"><strong style="color:#f59e0b;">التعلم من التجربة</strong> — النظام يستخرج معرفة عامة من التجارب المتكررة</li>
+                <li style="margin-bottom: 10px;"><strong style="color:#a78bfa;">سعة محدودة</strong> — مثل الذاكرة العاملة البشرية، 7±2 عناصر فقط نشطة</li>
+            </ul>
+        </div>
+
+        <!-- === Architecture === -->
+        <div class="section" id="architecture">
+            <div class="section-title"><span class="icon">🏗️</span> المعمارية العامة</div>
+
+            <div class="arch-diagram">
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <h3 style="color: #fff;">طبقات النظام</h3>
+                </div>
+
+                <div class="arch-grid">
+                    <div class="arch-box highlight" style="grid-column: 1 / -1;">
+                        <div class="box-title">🌐 طبقة API — FastAPI</div>
+                        <div class="box-tech">15 نقطة وصول (Endpoint)</div>
+                        <div class="box-desc">استقبال الطلبات → التحقق → التوجيه للخدمة المناسبة</div>
+                    </div>
+
+                    <div class="arch-box">
+                        <div class="box-title">🧮 محرك ACT-R</div>
+                        <div class="box-tech">core/actr.py</div>
+                        <div class="box-desc">المعادلات الرياضية للتنشيط والاسترجاع</div>
+                    </div>
+                    <div class="arch-box">
+                        <div class="box-title">💔 محرك النسيان</div>
+                        <div class="box-tech">core/forgetting.py</div>
+                        <div class="box-desc">5 أنماط نسيان مستوحاة من علم الأعصاب</div>
+                    </div>
+                    <div class="arch-box">
+                        <div class="box-title">😊 المشاعر والبروز</div>
+                        <div class="box-tech">core/emotion.py</div>
+                        <div class="box-desc">تحليل المشاعر وحساب أهمية الذكرى</div>
+                    </div>
+
+                    <div class="arch-box">
+                        <div class="box-title">🔵 Qdrant</div>
+                        <div class="box-tech">البحث بالمتجهات</div>
+                        <div class="box-desc">بحث دلالي سريع بالتشابه</div>
+                    </div>
+                    <div class="arch-box">
+                        <div class="box-title">🐘 PostgreSQL</div>
+                        <div class="box-tech">البيانات الوصفية</div>
+                        <div class="box-desc">الطوابع الزمنية، التنشيط، سجل الوصول</div>
+                    </div>
+                    <div class="arch-box">
+                        <div class="box-title">🕸️ Neo4j</div>
+                        <div class="box-tech">رسم المعرفة</div>
+                        <div class="box-desc">المفاهيم والعلاقات الدلالية</div>
+                    </div>
+                </div>
+
+                <div style="text-align: center;">
+                    <div class="arch-box" style="display: inline-block; min-width: 400px;">
+                        <div class="box-title">⏰ المهام الخلفية — Celery + Redis</div>
+                        <div class="box-desc">تحديث الاضمحلال كل 30 دقيقة | دورة التوحيد كل 6 ساعات</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- === Memory Types === -->
+        <div class="section" id="memory-types">
+            <div class="section-title"><span class="icon">🗃️</span> أنواع الذاكرة الخمسة</div>
+            <p style="color: #a0a0c0; margin-bottom: 20px;">
+                الدماغ البشري لا يستخدم نظام ذاكرة واحد — بل 5 أنظمة مختلفة ومترابطة. هذا النظام يحاكيها جميعاً:
+            </p>
+
+            <div class="memory-types">
+                <div class="memory-type episodic">
+                    <div class="mt-name">📹 الذاكرة العرضية</div>
+                    <div class="mt-desc">
+                        <strong>الأحداث والتجارب</strong><br>
+                        كل تفاعل يُخزن كحدث مع embedding دلالي. مثل ذكريات الأحداث في حياتك.
+                        <br><br>
+                        <span style="color:#60a5fa;">Qdrant + PostgreSQL</span>
+                    </div>
+                </div>
+                <div class="memory-type semantic">
+                    <div class="mt-name">📚 الذاكرة الدلالية</div>
+                    <div class="mt-desc">
+                        <strong>المعرفة العامة</strong><br>
+                        حقائق ومفاهيم مستخرجة من التجارب. مثل معرفتك أن "بايثون لغة برمجة".
+                        <br><br>
+                        <span style="color:#4ade80;">Neo4j Knowledge Graph</span>
+                    </div>
+                </div>
+                <div class="memory-type procedural">
+                    <div class="mt-name">⚙️ الذاكرة الإجرائية</div>
+                    <div class="mt-desc">
+                        <strong>المهارات المكتسبة</strong><br>
+                        أنماط عمل متكررة تُجمّع كمهارات. مثل قيادة السيارة — تعملها تلقائياً.
+                        <br><br>
+                        <span style="color:#f59e0b;">PostgreSQL JSONB</span>
+                    </div>
+                </div>
+                <div class="memory-type working">
+                    <div class="mt-name">💭 الذاكرة العاملة</div>
+                    <div class="mt-desc">
+                        <strong>السياق الحالي</strong><br>
+                        7±2 عناصر فقط نشطة في نفس الوقت. مثل ما تفكر فيه الآن.
+                        <br><br>
+                        <span style="color:#a78bfa;">سعة محدودة في الذاكرة</span>
+                    </div>
+                </div>
+                <div class="memory-type emotional">
+                    <div class="mt-name">❤️ الذاكرة العاطفية</div>
+                    <div class="mt-desc">
+                        <strong>التلوين العاطفي</strong><br>
+                        الأحداث العاطفية تُحفظ أقوى وتُنسى أبطأ. مثل ذكريات الفرح والحزن.
+                        <br><br>
+                        <span style="color:#f87171;">نموذج التكافؤ-الإثارة</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- === ACT-R === -->
+        <div class="section" id="actr">
+            <div class="section-title"><span class="icon">🧮</span> معادلات ACT-R — القلب الرياضي</div>
+            <p style="color: #a0a0c0; margin-bottom: 20px;">
+                ACT-R (التحكم التكيفي في الفكر — العقلاني) هي معمارية معرفية طوّرها جون أندرسون. كل ذكرى لها مستوى <strong style="color:#fff;">تنشيط</strong> يحدد مدى سهولة استرجاعها:
+            </p>
+
+            <div class="equation-box">
+                <div class="eq-label">المعادلة الرئيسية — التنشيط الكلي:</div>
+                <code>A_i = B_i + S_i + P_i + ε</code>
+            </div>
+            <div style="color: #a0a0c0; padding: 10px 20px; font-size: 0.95em;">
+                <strong style="color:#60a5fa;">A_i</strong> = التنشيط الكلي للذكرى &nbsp;|&nbsp;
+                <strong style="color:#4ade80;">B_i</strong> = تنشيط المستوى الأساسي (الحداثة والتكرار) &nbsp;|&nbsp;
+                <strong style="color:#f59e0b;">S_i</strong> = التنشيط المنتشر من السياق &nbsp;|&nbsp;
+                <strong style="color:#a78bfa;">P_i</strong> = مطابقة جزئية &nbsp;|&nbsp;
+                <strong style="color:#f87171;">ε</strong> = ضوضاء عشوائية
+            </div>
+
+            <div class="equation-box" style="margin-top: 20px;">
+                <div class="eq-label">تنشيط المستوى الأساسي — قانون القوة:</div>
+                <code>B_i = ln(Σ t_j^(-d))</code>
+                <div style="color: #8888aa; font-size: 0.85em; margin-top: 5px;">
+                    n = عدد مرات الوصول | t_j = الوقت منذ كل وصول | d = 0.5 (معدل الاضمحلال)
+                </div>
+            </div>
+            <p style="color: #a0a0c0; margin-top: 15px;">
+                <strong>المفتاح:</strong> هذه المعادلة تنتج <span style="color:#e94560;">اضمحلال بقانون القوة</span> — الذكريات تضعف بسرعة في البداية ثم ببطء. وهذا يطابق منحنى إيبنغهاوس للنسيان تماماً.
+                <br>
+                ذكرى تم الوصول إليها 10 مرات في الساعة الأخيرة لها تنشيط أعلى بكثير من ذكرى تم الوصول إليها مرة واحدة قبل سنة.
+            </p>
+
+            <div class="equation-box" style="margin-top: 20px;">
+                <div class="eq-label">التنشيط المنتشر — من السياق:</div>
+                <code>S_i = Σ W_k × S_ki</code>
+                <div style="color: #8888aa; font-size: 0.85em; margin-top: 5px;">
+                    W_k = وزن الانتباه | S_ki = قوة الارتباط بين المصدر والذكرى
+                </div>
+            </div>
+            <p style="color: #a0a0c0; margin-top: 15px;">
+                <strong>المعنى:</strong> السياق مهم! إذا كنت تفكر في "الطبخ"، كل الذكريات المتعلقة بالطبخ تحصل على دفعة تنشيط. هذا يُحسب عبر رسم المعرفة في Neo4j.
+            </p>
+
+            <div class="equation-box" style="margin-top: 20px;">
+                <div class="eq-label">البروز العاطفي:</div>
+                <code>Sal = 0.4|val| + 0.3·aro + 0.2·rel + 0.1·nov</code>
+                <div style="color: #8888aa; font-size: 0.85em; margin-top: 5px;">
+                    val = التكافؤ | aro = الإثارة | rel = الصلة بالهدف | nov = الجِدّة
+                </div>
+            </div>
+
+            <div class="equation-box" style="margin-top: 20px;">
+                <div class="eq-label">الاضمحلال المعدّل بالمشاعر:</div>
+                <code>modified_rate = base_decay / (1.0 + salience × 2.0)</code>
+                <div style="color: #8888aa; font-size: 0.85em; margin-top: 5px;">
+                    الذكريات ذات البروز العالي تضمحل أبطأ — مثل الذكريات العاطفية القوية في حياتك
+                </div>
+            </div>
+        </div>
+
+        <!-- === Features === -->
+        <div class="section" id="features">
+            <div class="section-title"><span class="icon">⭐</span> المميزات — 4 إصدارات</div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="card-version">V1 — الأساس</span>
+                    <h3>الذاكرة العرضية + الاضمحلال</h3>
+                    <p>
+                        تخزين الذكريات مع embeddings دلالية. الاسترجاع يستخدم معادلة ACT-R وليس فقط التشابه.
+                        مهمة خلفية كل 30 دقيقة تُعيد حساب التنشيط وتُضعف الذكريات القديمة.
+                    </p>
+                    <span class="tech-tag">FastAPI</span>
+                    <span class="tech-tag">Qdrant</span>
+                    <span class="tech-tag">PostgreSQL</span>
+                    <span class="tech-tag">Celery</span>
+                </div>
+
+                <div class="feature-card">
+                    <span class="card-version">V2 — المعرفة</span>
+                    <h3>الذاكرة الدلالية + التوحيد</h3>
+                    <p>
+                        رسم معرفة بالمفاهيم والعلاقات. التنشيط المنتشر يجعل الاسترجاع واعياً بالسياق.
+                        محرك توحيد بأربع مراحل يستخرج معرفة عامة من التجارب.
+                    </p>
+                    <span class="tech-tag">Neo4j</span>
+                    <span class="tech-tag">Spreading Activation</span>
+                    <span class="tech-tag">LLM Extraction</span>
+                </div>
+
+                <div class="feature-card">
+                    <span class="card-version">V3 — المشاعر</span>
+                    <h3>البروز العاطفي + الذاكرة العاملة</h3>
+                    <p>
+                        تحليل المشاعر عبر LLM (تكافؤ + إثارة). الذكريات العاطفية تضمحل أبطأ وتحصل على دفعة عند الاسترجاع.
+                        الذاكرة العاملة محدودة بـ 7 عناصر.
+                    </p>
+                    <span class="tech-tag">Valence-Arousal</span>
+                    <span class="tech-tag">Salience</span>
+                    <span class="tech-tag">7±2 Capacity</span>
+                </div>
+
+                <div class="feature-card">
+                    <span class="card-version">V4 — النسيان</span>
+                    <h3>الذاكرة الإجرائية + النسيان الاستراتيجي</h3>
+                    <p>
+                        5 أنماط نسيان مستوحاة من علم الأعصاب. تخزين المهارات المكتسبة من الأنماط المتكررة.
+                        واجهة API للنسيان الاستراتيجي.
+                    </p>
+                    <span class="tech-tag">5 Forgetting Modes</span>
+                    <span class="tech-tag">Procedural Skills</span>
+                    <span class="tech-tag">JSONB</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- === Forgetting === -->
+        <div class="section" id="forgetting">
+            <div class="section-title"><span class="icon">💨</span> النسيان — ميزة وليس عيب</div>
+            <p style="color: #a0a0c0; margin-bottom: 20px;">
+                النسيان آلية تكيفية. بدونه، الاسترجاع سيكون بطيئاً جداً بسبب كثرة الذكريات المتنافسة. النظام يطبق 5 أنماط نسيان:
+            </p>
+
+            <ul class="forget-list">
+                <li>
+                    <span class="forget-num">1</span>
+                    <div>
+                        <div class="forget-title">الاضمحلال الزمني (Temporal Decay)</div>
+                        <div class="forget-desc">الذكريات تضعف مع مرور الوقت وفق قانون القوة. سريع في البداية ثم أبطأ. يعمل تلقائياً كل 30 دقيقة.</div>
+                    </div>
+                </li>
+                <li>
+                    <span class="forget-num">2</span>
+                    <div>
+                        <div class="forget-title">التداخل (Interference)</div>
+                        <div class="forget-desc">ذكريات جديدة مشابهة تُضعف القديمة. مثل تعلم رقم هاتف جديد يجعلك تنسى القديم.</div>
+                    </div>
+                </li>
+                <li>
+                    <span class="forget-num">3</span>
+                    <div>
+                        <div class="forget-title">النسيان الناتج عن الاسترجاع (RIF)</div>
+                        <div class="forget-desc">استرجاع ذكرى A يُثبّط المنافسين B و C. الدماغ يقمع المنافسين لجعل الاسترجاع أكثر كفاءة.</div>
+                    </div>
+                </li>
+                <li>
+                    <span class="forget-num">4</span>
+                    <div>
+                        <div class="forget-title">التقليم الاستراتيجي (Strategic Prune)</div>
+                        <div class="forget-desc">نسيان موجّه بالأهداف — الذكريات غير المرتبطة بالأهداف الحالية تُضعف.</div>
+                    </div>
+                </li>
+                <li>
+                    <span class="forget-num">5</span>
+                    <div>
+                        <div class="forget-title">تجاوز السعة (Capacity Overflow)</div>
+                        <div class="forget-desc">عندما يمتلئ المخزن، أضعف الذكريات تُؤرشف. مثل إدارة ذاكرة الحاسوب.</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- === Consolidation === -->
+        <div class="section" id="consolidation">
+            <div class="section-title"><span class="icon">🌙</span> التوحيد — مثل النوم</div>
+            <p style="color: #a0a0c0; margin-bottom: 20px;">
+                أثناء النوم، الدماغ يُعيد تشغيل التجارب الحديثة ويستخرج منها معرفة عامة وينظف الذكريات الضعيفة.
+                هذا النظام يفعل نفس الشيء كل 6 ساعات عبر دورة من 4 مراحل:
+            </p>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>المرحلة 1: إعادة التشغيل (Replay) 🔄</h4>
+                    <p>
+                        الذكريات الحديثة ذات البروز العالي (salience > 0.6) تحصل على دفعة تنشيط.
+                        مثل إعادة تشغيل الأحداث المهمة أثناء النوم العميق (SWS).
+                    </p>
+                </div>
+                <div class="timeline-item">
+                    <h4>المرحلة 2: الاستخراج (Extract) 🔍</h4>
+                    <p>
+                        الذكريات المتشابهة تُجمّع في عناقيد. نموذج LLM يحلل كل عنقود ويستخرج حقائق عامة.
+                        هذه الحقائق تُخزن في رسم المعرفة (Neo4j).
+                        <br>
+                        <strong>مثال:</strong> 5 ذكريات عن "المستخدم يفضل الوضع الداكن" → حقيقة: "المستخدم يفضل الوضع الداكن" (ثقة: 0.9)
+                    </p>
+                </div>
+                <div class="timeline-item">
+                    <h4>المرحلة 3: التقليم (Prune) ✂️</h4>
+                    <p>
+                        تنشيط جميع الذكريات يُضرب في 0.9 (تقليص عالمي).
+                        الذكريات التي تنخفض تحت العتبة تُؤرشف.
+                        مثل فرضية التوازن المشبكي — النوم يُنظف الروابط الضعيفة.
+                    </p>
+                </div>
+                <div class="timeline-item">
+                    <h4>المرحلة 4: التجميع (Compile) ⚙️</h4>
+                    <p>
+                        الأنماط المتكررة الناجحة (3+ مرات بنسبة نجاح > 80%) تُجمّع كمهارات إجرائية.
+                        مثل تحويل الممارسة المتكررة إلى عادة تلقائية.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- === Connections === -->
+        <div class="section" id="connections">
+            <div class="section-title"><span class="icon">🔗</span> كيف ترتبط المكونات ببعضها</div>
+
+            <div class="connections">
+                <h3 style="color: #fff; margin-bottom: 20px; text-align: center;">مسار التخزين</h3>
+                <div class="flow-container">
+                    <div class="flow-step">📝 نص الإدخال</div>
+                    <div class="flow-arrow">←</div>
+                    <div class="flow-step">😊 تحليل المشاعر<br><small style="color:#8888aa">valence + arousal</small></div>
+                    <div class="flow-arrow">←</div>
+                    <div class="flow-step">🔢 توليد Embedding<br><small style="color:#8888aa">API خارجي</small></div>
+                    <div class="flow-arrow">←</div>
+                    <div class="flow-step">💾 Qdrant + PostgreSQL<br><small style="color:#8888aa">متجه + بيانات وصفية</small></div>
+                </div>
+            </div>
+
+            <div class="connections" style="margin-top: 15px;">
+                <h3 style="color: #fff; margin-bottom: 20px; text-align: center;">مسار الاسترجاع (خط الأنابيب ACT-R)</h3>
+                <div class="flow-container">
+                    <div class="flow-step">🔍 استعلام</div>
+                    <div class="flow-arrow">←</div>
+                    <div class="flow-step">🔢 Embed</div>
+                    <div class="flow-arrow">←</div>
+                    <div class="flow-step">📊 Qdrant<br><small style="color:#8888aa">top_k × 3 مرشح</small></div>
+                    <div class="flow-arrow">←</div>
+                    <div class="flow-step">🧮 حساب ACT-R<br><small style="color:#8888aa">B_i + S_i + ε</small></div>
+                    <div class="flow-arrow">←</div>
+                    <div class="flow-step">🏆 أعلى 7<br><small style="color:#8888aa">ذاكرة عاملة</small></div>
+                </div>
+            </div>
+
+            <div class="connections" style="margin-top: 15px;">
+                <h3 style="color: #fff; margin-bottom: 20px; text-align: center;">الروابط بين المكونات</h3>
+
+                <div class="conn-row">
+                    <div class="conn-from" style="color:#60a5fa;">الذاكرة العرضية</div>
+                    <div class="conn-label">التوحيد يستخرج حقائق عامة →</div>
+                    <div class="conn-arrow">←</div>
+                    <div class="conn-to" style="color:#4ade80;">الذاكرة الدلالية</div>
+                </div>
+                <div class="conn-row">
+                    <div class="conn-from" style="color:#4ade80;">الذاكرة الدلالية</div>
+                    <div class="conn-label">التنشيط المنتشر يعزز الاسترجاع →</div>
+                    <div class="conn-arrow">←</div>
+                    <div class="conn-to" style="color:#60a5fa;">الاسترجاع</div>
+                </div>
+                <div class="conn-row">
+                    <div class="conn-from" style="color:#f87171;">المشاعر</div>
+                    <div class="conn-label">البروز يُبطئ الاضمحلال ويعزز الاسترجاع →</div>
+                    <div class="conn-arrow">←</div>
+                    <div class="conn-to" style="color:#60a5fa;">الاضمحلال + الاسترجاع</div>
+                </div>
+                <div class="conn-row">
+                    <div class="conn-from" style="color:#60a5fa;">أنماط متكررة</div>
+                    <div class="conn-label">التجميع يحوّل التكرار إلى مهارة →</div>
+                    <div class="conn-arrow">←</div>
+                    <div class="conn-to" style="color:#f59e0b;">الذاكرة الإجرائية</div>
+                </div>
+                <div class="conn-row">
+                    <div class="conn-from" style="color:#a78bfa;">الذاكرة العاملة</div>
+                    <div class="conn-label">7 عناصر فقط تمر للسياق النشط →</div>
+                    <div class="conn-arrow">←</div>
+                    <div class="conn-to" style="color:#fff;">استجابة الوكيل</div>
+                </div>
+            </div>
+
+            <div class="connections" style="margin-top: 15px;">
+                <h3 style="color: #fff; margin-bottom: 20px; text-align: center;">حلقة التعلم الكاملة للوكيل</h3>
+                <div class="flow-container">
+                    <div class="flow-step">👁️ إدراك</div>
+                    <div class="flow-arrow">←</div>
+                    <div class="flow-step">🧠 تذكّر</div>
+                    <div class="flow-arrow">←</div>
+                    <div class="flow-step">📋 تخطيط</div>
+                    <div class="flow-arrow">←</div>
+                    <div class="flow-step">⚡ تنفيذ</div>
+                    <div class="flow-arrow">←</div>
+                    <div class="flow-step">📝 تعلّم</div>
+                    <div class="flow-arrow" style="transform: rotate(180deg);">↩️</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- === API === -->
+        <div class="section" id="api">
+            <div class="section-title"><span class="icon">🔌</span> واجهة API — 15 نقطة وصول</div>
+
+            <table class="api-table">
+                <thead>
+                    <tr>
+                        <th>الطريقة</th>
+                        <th>المسار</th>
+                        <th>الوصف</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="method-badge post">POST</span></td>
+                        <td style="font-family:monospace; direction:ltr;">/v1/memories</td>
+                        <td>تخزين ذكرى جديدة مع embedding ومشاعر</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge post">POST</span></td>
+                        <td style="font-family:monospace; direction:ltr;">/v1/memories/search</td>
+                        <td>بحث دلالي مع ترتيب ACT-R</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge get">GET</span></td>
+                        <td style="font-family:monospace; direction:ltr;">/v1/memories/{id}</td>
+                        <td>استرجاع مباشر بالمعرّف (يقوّي الذكرى)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge delete">DELETE</span></td>
+                        <td style="font-family:monospace; direction:ltr;">/v1/memories/{id}</td>
+                        <td>نسيان (حذف ناعم)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge post">POST</span></td>
+                        <td style="font-family:monospace; direction:ltr;">/v1/memories/decay</td>
+                        <td>تشغيل الاضمحلال يدوياً</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge get">GET</span></td>
+                        <td style="font-family:monospace; direction:ltr;">/v1/memories/{id}/inspect</td>
+                        <td>فحص كامل: كل البيانات الوصفية وسجل الوصول</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge get">GET</span></td>
+                        <td style="font-family:monospace; direction:ltr;">/v1/stats</td>
+                        <td>إحصائيات النظام</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge post">POST</span></td>
+                        <td style="font-family:monospace; direction:ltr;">/v1/graph/concepts</td>
+                        <td>إنشاء مفهوم في رسم المعرفة</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge get">GET</span></td>
+                        <td style="font-family:monospace; direction:ltr;">/v1/graph/concepts/{name}</td>
+                        <td>استعلام مفهوم مع علاقاته</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge post">POST</span></td>
+                        <td style="font-family:monospace; direction:ltr;">/v1/graph/relations</td>
+                        <td>إنشاء علاقة بين مفهومين</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge post">POST</span></td>
+                        <td style="font-family:monospace; direction:ltr;">/v1/graph/search</td>
+                        <td>بحث بالتنشيط المنتشر</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge post">POST</span></td>
+                        <td style="font-family:monospace; direction:ltr;">/v1/graph/consolidate</td>
+                        <td>تشغيل دورة التوحيد يدوياً</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge post">POST</span></td>
+                        <td style="font-family:monospace; direction:ltr;">/v1/memories/forget-strategy</td>
+                        <td>تطبيق نمط نسيان محدد</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge get">GET</span></td>
+                        <td style="font-family:monospace; direction:ltr;">/health</td>
+                        <td>فحص الحيوية</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge get">GET</span></td>
+                        <td style="font-family:monospace; direction:ltr;">/ready</td>
+                        <td>فحص الجاهزية (يتحقق من كل الخدمات)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- === Docker === -->
+        <div class="section" id="docker">
+            <div class="section-title"><span class="icon">🐳</span> Docker — 7 خدمات</div>
+            <p style="color: #a0a0c0; margin-bottom: 20px;">
+                كل الخدمات تعمل في حاويات Docker. الصورة الأساسية Alpine Linux (255 ميجابايت فقط).
+                أمر واحد يشغّل كل شيء: <code style="color:#4ade80; background:#1a2a1a; padding:2px 8px; border-radius:4px;">docker compose up -d</code>
+            </p>
+
+            <div class="docker-services">
+                <div class="docker-svc alpine">
+                    <div class="svc-name">🚀 App</div>
+                    <div class="svc-image">python:3.13-alpine</div>
+                    <div class="svc-port">:8000</div>
+                </div>
+                <div class="docker-svc alpine">
+                    <div class="svc-name">👷 Worker</div>
+                    <div class="svc-image">python:3.13-alpine</div>
+                    <div class="svc-port">Celery</div>
+                </div>
+                <div class="docker-svc alpine">
+                    <div class="svc-name">⏰ Beat</div>
+                    <div class="svc-image">python:3.13-alpine</div>
+                    <div class="svc-port">Scheduler</div>
+                </div>
+                <div class="docker-svc alpine">
+                    <div class="svc-name">🐘 PostgreSQL</div>
+                    <div class="svc-image">postgres:17-alpine</div>
+                    <div class="svc-port">:5432</div>
+                </div>
+                <div class="docker-svc alpine">
+                    <div class="svc-name">🔵 Qdrant</div>
+                    <div class="svc-image">qdrant/qdrant</div>
+                    <div class="svc-port">:6333</div>
+                </div>
+                <div class="docker-svc alpine">
+                    <div class="svc-name">🔴 Redis</div>
+                    <div class="svc-image">redis:7-alpine</div>
+                    <div class="svc-port">:6379</div>
+                </div>
+                <div class="docker-svc">
+                    <div class="svc-name">🕸️ Neo4j</div>
+                    <div class="svc-image">neo4j:5-community</div>
+                    <div class="svc-port">:7474 / :7687</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; background: #12122a; border-radius: 12px; padding: 20px; border: 1px solid #2a2a4a;">
+                <h4 style="color: #fff; margin-bottom: 10px;">🧪 56 اختبار وحدة ناجح</h4>
+                <div style="color: #8888aa; font-size: 0.9em;">
+                    <span style="color: #4ade80;">✓</span> معادلات ACT-R (21 اختبار) &nbsp;|&nbsp;
+                    <span style="color: #4ade80;">✓</span> نماذج البيانات (13 اختبار) &nbsp;|&nbsp;
+                    <span style="color: #4ade80;">✓</span> المشاعر والبروز (7 اختبارات) &nbsp;|&nbsp;
+                    <span style="color: #4ade80;">✓</span> الذاكرة العاملة (6 اختبارات) &nbsp;|&nbsp;
+                    <span style="color: #4ade80;">✓</span> النسيان (9 اختبارات)
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        نظام الذاكرة الشبيه بالإنسان — مبني على معمارية ACT-R المعرفية
+        <br>
+        <span style="font-size: 0.85em;">مارس 2026</span>
+    </div>
+
+</body>
+</html>

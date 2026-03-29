@@ -147,6 +147,18 @@ class PostgresMetadataStore:
             await session.commit()
             return result.rowcount > 0  # type: ignore[return-value]
 
+    async def get_all_memories(self, offset: int = 0, limit: int = 50) -> list[MemoryMetadata]:
+        """Get all memories (any status) with pagination."""
+        async with self.session_factory() as session:
+            stmt = (
+                select(MemoryMetadata)
+                .order_by(MemoryMetadata.activation.desc())
+                .offset(offset)
+                .limit(limit)
+            )
+            result = await session.execute(stmt)
+            return list(result.scalars().all())
+
     async def get_all_active_memories(self) -> list[MemoryMetadata]:
         """Get all memories with status 'active'."""
         async with self.session_factory() as session:

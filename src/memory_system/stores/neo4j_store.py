@@ -115,6 +115,47 @@ class Neo4jStore:
             result = await session.run(query, concept=concept)
             return [dict(r) async for r in result]
 
+    async def get_full_graph(self, limit: int = 200) -> dict[str, list[dict[str, object]]]:
+        """Export all concepts and relationships for visualization."""
+        query = """
+        MATCH (c:Concept)
+        WITH c LIMIT $limit
+        OPTIONAL MATCH (c)-[r]->(t:Concept)
+        RETURN c.name AS source_name, c.type AS source_type, c.activation AS source_activation,
+               t.name AS target_name, type(r) AS rel_type, r.weight AS rel_weight
+        """
+        nodes_map: dict[str, dict[str, object]] = {}
+        edges: list[dict[str, object]] = []
+
+        async with self._driver.session() as session:
+            result = await session.run(query, limit=limit)
+            async for record in result:
+                src = record["source_name"]
+                if src and src not in nodes_map:
+                    nodes_map[src] = {
+                        "name": src,
+                        "type": record["source_type"] or "concept",
+                        "activation": record["source_activation"] or 0.5,
+                    }
+                tgt = record["target_name"]
+                if tgt:
+                    if tgt not in nodes_map:
+                        nodes_map[tgt] = {
+                            "name": tgt,
+                            "type": "concept",
+                            "activation": 0.5,
+                        }
+                    edges.append(
+                        {
+                            "source": src,
+                            "target": tgt,
+                            "relation_type": record["rel_type"] or "RELATED_TO",
+                            "weight": record["rel_weight"] or 0.5,
+                        }
+                    )
+
+        return {"nodes": list(nodes_map.values()), "edges": edges}
+
     async def store_extracted_fact(
         self, fact: str, confidence: float, source_episode_ids: list[str]
     ) -> dict[str, object]:

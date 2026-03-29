@@ -3,9 +3,14 @@
 import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
+from memory_system.api.benchmark import router as benchmark_router
+from memory_system.api.dashboard import router as dashboard_router
 from memory_system.api.forgetting import router as forgetting_router
 from memory_system.api.graph import router as graph_router
 from memory_system.api.memories import router as memories_router
@@ -117,10 +122,27 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(memories_router)
 app.include_router(stats_router)
 app.include_router(graph_router)
 app.include_router(forgetting_router)
+app.include_router(dashboard_router)
+app.include_router(benchmark_router)
+
+DASHBOARD_PATH = Path(__file__).parent / "dashboard.html"
+
+
+@app.get("/", response_class=FileResponse, tags=["dashboard"])
+async def dashboard() -> FileResponse:
+    """Serve the frontend dashboard."""
+    return FileResponse(DASHBOARD_PATH, media_type="text/html")
 
 
 @app.get("/health", tags=["system"])

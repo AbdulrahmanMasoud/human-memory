@@ -36,6 +36,12 @@ models/
 .DS_Store
 Thumbs.db
 
+# Frontend
+node_modules/
+frontend/dist/
+frontend/.vite/
+*.tsbuildinfo
+
 # Claude & Spec-kit
 .claude/
 .specify/

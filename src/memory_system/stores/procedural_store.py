@@ -1,9 +1,9 @@
 """PostgreSQL store for procedural memory (compiled skills)."""
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from sqlalchemy import Float, Integer, String, Text, select, update
+from sqlalchemy import Float, Integer, String, select, update
 from sqlalchemy.dialects.postgresql import JSONB, TIMESTAMP, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -26,7 +26,7 @@ class ProceduralSkill(Base):
     execution_count: Mapped[int] = mapped_column(Integer, default=0)
     compiled_from: Mapped[list] = mapped_column(JSONB, default=list)  # type: ignore[type-arg]
     created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
+        TIMESTAMP(timezone=True), default=lambda: datetime.now(UTC)
     )
 
 

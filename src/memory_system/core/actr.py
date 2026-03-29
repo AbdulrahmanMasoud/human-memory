@@ -29,9 +29,7 @@ class ACTRMemory:
         self.threshold = threshold
         self.latency_factor = latency_factor
 
-    def base_level_activation(
-        self, access_times: list[float], current_time: float
-    ) -> float:
+    def base_level_activation(self, access_times: list[float], current_time: float) -> float:
         """Compute B_i = ln(Σ t_j^(-d)).
 
         Args:
@@ -147,9 +145,7 @@ class ACTRMemory:
             return float("inf")
         return self.latency_factor * math.exp(-activation)
 
-    def retrieval_probability(
-        self, activation: float, scale: float = 1.0
-    ) -> float:
+    def retrieval_probability(self, activation: float, scale: float = 1.0) -> float:
         """Compute P(retrieve) = 1 / (1 + e^(-(A_i - τ)/s))."""
         exponent = -(activation - self.threshold) / max(scale, 0.001)
         try:

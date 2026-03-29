@@ -1,6 +1,6 @@
 """Tests for Pydantic models."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import uuid4
 
 import pytest
@@ -53,7 +53,7 @@ class TestMemoryCreateResponse:
         r = MemoryCreateResponse(
             memory_id=uuid4(),
             activation=1.0,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
         data = r.model_dump()
         assert "memory_id" in data
@@ -67,7 +67,7 @@ class TestMemorySearchResult:
             content="test content",
             activation=0.85,
             similarity=0.92,
-            last_accessed=datetime.now(timezone.utc),
+            last_accessed=datetime.now(UTC),
             access_count=5,
         )
         assert r.activation == 0.85
@@ -76,9 +76,7 @@ class TestMemorySearchResult:
 
 class TestMemoryStats:
     def test_stats(self) -> None:
-        s = MemoryStats(
-            total=100, active=80, decayed=15, deleted=5, avg_activation=0.65
-        )
+        s = MemoryStats(total=100, active=80, decayed=15, deleted=5, avg_activation=0.65)
         assert s.total == 100
         assert s.active + s.decayed + s.deleted == 100
 
@@ -89,8 +87,8 @@ class TestMemoryDetail:
             memory_id=uuid4(),
             content="detailed memory",
             memory_type="episodic",
-            created_at=datetime.now(timezone.utc),
-            last_accessed=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            last_accessed=datetime.now(UTC),
             access_count=3,
             activation=0.75,
             salience=0.5,

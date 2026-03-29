@@ -1,10 +1,10 @@
 """PostgreSQL metadata store adapter."""
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import func, select, update
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from memory_system.models.database import AccessHistory, MemoryMetadata
 
@@ -26,7 +26,7 @@ class PostgresMetadataStore:
         memory_id: uuid.UUID | None = None,
     ) -> MemoryMetadata:
         """Insert a new memory metadata record."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         mem = MemoryMetadata(
             memory_id=memory_id or uuid.uuid4(),
             memory_type=memory_type,
@@ -63,11 +63,9 @@ class PostgresMetadataStore:
             result = await session.execute(stmt)
             return result.scalar_one_or_none()
 
-    async def record_access(
-        self, memory_id: uuid.UUID, context: str | None = None
-    ) -> None:
+    async def record_access(self, memory_id: uuid.UUID, context: str | None = None) -> None:
         """Record an access event and update metadata."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         async with self.session_factory() as session:
             # Update metadata
             stmt = (
@@ -81,15 +79,11 @@ class PostgresMetadataStore:
             await session.execute(stmt)
 
             # Add access record
-            access = AccessHistory(
-                memory_id=memory_id, accessed_at=now, context=context
-            )
+            access = AccessHistory(memory_id=memory_id, accessed_at=now, context=context)
             session.add(access)
             await session.commit()
 
-    async def get_access_times(
-        self, memory_id: uuid.UUID, limit: int = 1000
-    ) -> list[float]:
+    async def get_access_times(self, memory_id: uuid.UUID, limit: int = 1000) -> list[float]:
         """Get access timestamps as epoch seconds, most recent first."""
         async with self.session_factory() as session:
             stmt = (
@@ -116,9 +110,7 @@ class PostgresMetadataStore:
             result = await session.execute(stmt)
             return list(result.scalars().all())
 
-    async def update_activation(
-        self, memory_id: uuid.UUID, activation: float
-    ) -> None:
+    async def update_activation(self, memory_id: uuid.UUID, activation: float) -> None:
         """Update a memory's activation score."""
         async with self.session_factory() as session:
             stmt = (

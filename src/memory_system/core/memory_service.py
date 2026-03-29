@@ -2,7 +2,6 @@
 
 import time
 import uuid
-from datetime import datetime, timezone
 
 from memory_system.core.actr import ACTRMemory
 from memory_system.core.embeddings import EmbeddingService
@@ -229,9 +228,7 @@ class MemoryService:
         decayed = 0
 
         for mem in active_memories:
-            access_times = await self.pg.get_access_times(
-                mem.memory_id, limit=1000
-            )
+            access_times = await self.pg.get_access_times(mem.memory_id, limit=1000)
 
             # Recompute activation (no noise during decay — deterministic)
             activation = self.actr.total_activation(

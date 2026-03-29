@@ -71,9 +71,7 @@ class TestTotalActivation:
         access_times = [999.0, 998.0, 997.0]
 
         b_i = actr.base_level_activation(access_times, current)
-        a_i = actr.total_activation(
-            access_times, current, include_noise=False
-        )
+        a_i = actr.total_activation(access_times, current, include_noise=False)
         assert a_i == pytest.approx(b_i, abs=0.001)
 
     def test_no_access_returns_neg_inf(self, actr: ACTRMemory) -> None:
@@ -146,9 +144,7 @@ class TestSpreadingActivation:
             ("ctx1", "chunk1"): 2.0,
             ("ctx2", "chunk1"): 1.0,
         }
-        result = actr.spreading_activation(
-            "chunk1", ["ctx1", "ctx2"], associations
-        )
+        result = actr.spreading_activation("chunk1", ["ctx1", "ctx2"], associations)
         # W = 1/2 for each, S = 0.5*2.0 + 0.5*1.0 = 1.5
         assert result == pytest.approx(1.5, abs=0.01)
 

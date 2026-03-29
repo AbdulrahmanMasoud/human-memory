@@ -33,9 +33,7 @@ async def store_memory(body: MemoryCreate, request: Request) -> MemoryCreateResp
 
 
 @router.post("/search", response_model=MemorySearchResponse)
-async def search_memories(
-    body: MemorySearchRequest, request: Request
-) -> MemorySearchResponse:
+async def search_memories(body: MemorySearchRequest, request: Request) -> MemorySearchResponse:
     """Retrieve memories by semantic query with ACT-R activation ranking."""
     service = _get_service(request)
     return await service.retrieve(

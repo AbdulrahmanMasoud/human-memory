@@ -34,7 +34,9 @@ async def create_concept(body: ConceptCreate, request: Request) -> ConceptRespon
     """Create or update a concept node."""
     store = _get_neo4j(request)
     result = await store.create_concept(body.name, body.type, body.activation)
-    return ConceptResponse(name=result["name"], type=result["type"], activation=result["activation"])
+    return ConceptResponse(
+        name=result["name"], type=result["type"], activation=result["activation"]
+    )
 
 
 @router.get("/concepts/{name}", response_model=ConceptResponse)
@@ -48,15 +50,20 @@ async def get_concept(name: str, request: Request) -> ConceptResponse:
     relations = []
     for r in result.get("relations", []):
         if r.get("target"):
-            relations.append(RelationResponse(
-                source=name, target=r["target"],
-                relation_type=r.get("type", "RELATED_TO"),
-                weight=r.get("weight", 1.0),
-            ))
+            relations.append(
+                RelationResponse(
+                    source=name,
+                    target=r["target"],
+                    relation_type=r.get("type", "RELATED_TO"),
+                    weight=r.get("weight", 1.0),
+                )
+            )
 
     return ConceptResponse(
-        name=result["name"], type=result["type"],
-        activation=result["activation"], relationships=relations,
+        name=result["name"],
+        type=result["type"],
+        activation=result["activation"],
+        relationships=relations,
     )
 
 

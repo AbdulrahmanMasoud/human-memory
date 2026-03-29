@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [master, main]
+    branches: [master, main, 004-procedural-forgetting]
   pull_request:
     branches: [master, main]
 
@@ -26,6 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: cp .env.example .env
       - run: docker compose build app
       - run: |
           docker compose up -d postgres qdrant redis

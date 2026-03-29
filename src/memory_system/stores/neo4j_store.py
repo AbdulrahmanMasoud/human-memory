@@ -2,7 +2,7 @@
 
 import logging
 
-from neo4j import AsyncGraphDatabase, AsyncDriver
+from neo4j import AsyncDriver, AsyncGraphDatabase
 
 logger = logging.getLogger(__name__)
 
@@ -11,9 +11,7 @@ class Neo4jStore:
     """Thin adapter for knowledge graph operations in Neo4j."""
 
     def __init__(self, uri: str, user: str, password: str) -> None:
-        self._driver: AsyncDriver = AsyncGraphDatabase.driver(
-            uri, auth=(user, password)
-        )
+        self._driver: AsyncDriver = AsyncGraphDatabase.driver(uri, auth=(user, password))
 
     async def close(self) -> None:
         await self._driver.close()
@@ -104,9 +102,7 @@ class Neo4jStore:
             records = [dict(r) async for r in result]
             return records
 
-    async def search_graph(
-        self, concept: str, depth: int = 2
-    ) -> list[dict[str, object]]:
+    async def search_graph(self, concept: str, depth: int = 2) -> list[dict[str, object]]:
         """Traverse the graph from a starting concept."""
         safe_depth = max(1, min(int(depth), 4))
         query = f"""

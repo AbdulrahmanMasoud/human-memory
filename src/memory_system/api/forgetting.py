@@ -41,11 +41,14 @@ async def apply_forget_strategy(
         goals = body.params.get("goals", [])
         if isinstance(goals, list):
             active = await service.pg.get_all_active_memories()
-            mems = [{"id": str(m.memory_id), "content": m.content, "activation": m.activation}
-                    for m in active]
+            mems = [
+                {"id": str(m.memory_id), "content": m.content, "activation": m.activation}
+                for m in active
+            ]
             updates = engine.compute_strategic_prune(mems, goals)  # type: ignore[arg-type]
             for mem_id, new_act in updates:
                 import uuid
+
                 await service.pg.update_activation(uuid.UUID(mem_id), new_act)
             affected = len(updates)
 
@@ -55,6 +58,7 @@ async def apply_forget_strategy(
         to_archive = engine.compute_capacity_overflow(mems)
         for mem_id in to_archive:
             import uuid
+
             await service.pg.mark_decayed(uuid.UUID(mem_id))
         affected = len(to_archive)
 

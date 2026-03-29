@@ -12,7 +12,6 @@ import time
 
 import httpx
 
-from memory_system.core.clustering import cluster_episodes
 from memory_system.models.graph import ConsolidationReport
 from memory_system.stores.neo4j_store import Neo4jStore
 from memory_system.stores.postgres_store import PostgresMetadataStore
@@ -105,11 +104,13 @@ class ConsolidationEngine:
         for mem in recent:
             # We use a dummy search to get the embedding isn't directly accessible,
             # so we store content for LLM extraction
-            episodes.append({
-                "id": str(mem.memory_id),
-                "content": mem.content,
-                "embedding": [],  # We'll cluster by content similarity via LLM
-            })
+            episodes.append(
+                {
+                    "id": str(mem.memory_id),
+                    "content": mem.content,
+                    "embedding": [],  # We'll cluster by content similarity via LLM
+                }
+            )
 
         # Try to cluster and extract
         facts_count = 0
@@ -164,6 +165,7 @@ Return ONLY the JSON array, no other text."""
             content = data["choices"][0]["message"]["content"]
 
             import json
+
             # Parse JSON from response
             content = content.strip()
             if content.startswith("```"):

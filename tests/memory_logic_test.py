@@ -11,9 +11,10 @@ Tests that the ACT-R memory system actually works as designed:
 - Consolidation prunes correctly
 """
 
-import time
-import httpx
 import sys
+import time
+
+import httpx
 
 BASE = "http://localhost:8000"
 c = httpx.Client(base_url=BASE, timeout=30.0)
@@ -21,6 +22,7 @@ c = httpx.Client(base_url=BASE, timeout=30.0)
 passed = 0
 failed = 0
 errors: list[str] = []
+
 
 def test(name, func):
     global passed, failed
@@ -39,25 +41,30 @@ def store(content, mtype="episodic"):
     assert r.status_code == 201, f"Store failed: {r.status_code} {r.text}"
     return r.json()
 
+
 def recall(mid):
     r = c.get(f"/v1/memories/{mid}")
     assert r.status_code == 200, f"Recall failed: {r.status_code}"
     return r.json()
+
 
 def inspect(mid):
     r = c.get(f"/v1/memories/{mid}/inspect")
     assert r.status_code == 200, f"Inspect failed: {r.status_code}"
     return r.json()
 
+
 def search(query, top_k=10):
     r = c.post("/v1/memories/search", json={"query": query, "top_k": top_k})
     assert r.status_code == 200, f"Search failed: {r.status_code} {r.text}"
     return r.json()
 
+
 def decay():
     r = c.post("/v1/memories/decay")
     assert r.status_code == 200
     return r.json()
+
 
 def stats():
     r = c.get("/v1/stats")
@@ -68,6 +75,7 @@ def stats():
 print("\n🧠 TEST 1: Access Tracking & Strengthening")
 print("=" * 55)
 # ═══════════════════════════════════════════════════════
+
 
 def test_access_count_grows():
     """Every recall should increment access_count."""
@@ -84,6 +92,7 @@ def test_access_count_grows():
     d2 = inspect(mid)
     # inspect itself doesn't count as recall, only GET /v1/memories/{id} does
     assert d2["access_count"] >= 4, f"After 3 recalls, expected >=4, got {d2['access_count']}"
+
 
 test("Access count increments on every recall", test_access_count_grows)
 
@@ -106,6 +115,7 @@ def test_access_history_has_timestamps():
         assert "accessed_at" in entry
         assert entry["accessed_at"] is not None
 
+
 test("Access history records timestamps", test_access_history_has_timestamps)
 
 
@@ -113,6 +123,7 @@ test("Access history records timestamps", test_access_history_has_timestamps)
 print("\n🧠 TEST 2: Decay Behavior")
 print("=" * 55)
 # ═══════════════════════════════════════════════════════
+
 
 def test_decay_changes_activation():
     """Decay should recalculate activation based on ACT-R B_i equation."""
@@ -131,6 +142,7 @@ def test_decay_changes_activation():
     # The key thing is it's no longer the default 1.0
     assert isinstance(after["activation"], (int, float))
     assert after["activation"] != initial_activation or True  # may be same if just stored
+
 
 test("Decay recalculates activation", test_decay_changes_activation)
 
@@ -155,12 +167,14 @@ def test_frequently_accessed_survives_decay_better():
     d_rare = inspect(m_rarely["memory_id"])
 
     assert d_freq["activation"] > d_rare["activation"], (
-        f"Frequent ({d_freq['activation']:.3f}) should be > "
-        f"rare ({d_rare['activation']:.3f})"
+        f"Frequent ({d_freq['activation']:.3f}) should be > rare ({d_rare['activation']:.3f})"
     )
 
-test("Frequently accessed memory has higher activation after decay",
-     test_frequently_accessed_survives_decay_better)
+
+test(
+    "Frequently accessed memory has higher activation after decay",
+    test_frequently_accessed_survives_decay_better,
+)
 
 
 def test_decay_can_mark_memories_as_decayed():
@@ -171,6 +185,7 @@ def test_decay_can_mark_memories_as_decayed():
     assert "memories_decayed" in result
     assert isinstance(result["memories_decayed"], int)
 
+
 test("Decay reports decayed count", test_decay_can_mark_memories_as_decayed)
 
 
@@ -178,6 +193,7 @@ test("Decay reports decayed count", test_decay_can_mark_memories_as_decayed)
 print("\n🧠 TEST 3: Search & ACT-R Ranking")
 print("=" * 55)
 # ═══════════════════════════════════════════════════════
+
 
 def test_search_returns_results():
     """Search should return semantically relevant results."""
@@ -188,6 +204,7 @@ def test_search_returns_results():
     results = search("data science programming language")
     assert results["count"] > 0, "Search should return results"
     assert len(results["results"]) > 0
+
 
 test("Search returns results", test_search_returns_results)
 
@@ -200,6 +217,7 @@ def test_search_results_have_activation():
         assert "similarity" in r, "Result missing similarity"
         assert isinstance(r["activation"], (int, float))
         assert isinstance(r["similarity"], (int, float))
+
 
 test("Search results include activation AND similarity", test_search_results_have_activation)
 
@@ -227,14 +245,18 @@ def test_search_orders_by_activation_not_similarity():
             f"Results not ordered by activation: {activations}"
         )
 
-test("Search orders by activation (ACT-R), not just similarity",
-     test_search_orders_by_activation_not_similarity)
+
+test(
+    "Search orders by activation (ACT-R), not just similarity",
+    test_search_orders_by_activation_not_similarity,
+)
 
 
 def test_search_respects_top_k():
     """Search should return at most top_k results."""
     results = search("programming", top_k=3)
     assert len(results["results"]) <= 3
+
 
 test("Search respects top_k limit", test_search_respects_top_k)
 
@@ -260,6 +282,7 @@ def test_search_strengthens_returned_memories():
             f"before={before_count}, after={after['access_count']}"
         )
 
+
 test("Search retrieval strengthens returned memories", test_search_strengthens_returned_memories)
 
 
@@ -267,6 +290,7 @@ test("Search retrieval strengthens returned memories", test_search_strengthens_r
 print("\n🧠 TEST 4: Forget (Soft Delete)")
 print("=" * 55)
 # ═══════════════════════════════════════════════════════
+
 
 def test_forgotten_memory_gone_from_recall():
     """Deleted memory should not be recallable."""
@@ -283,6 +307,7 @@ def test_forgotten_memory_gone_from_recall():
     # Should be gone
     assert c.get(f"/v1/memories/{mid}").status_code == 404
 
+
 test("Forgotten memory not recallable", test_forgotten_memory_gone_from_recall)
 
 
@@ -290,6 +315,7 @@ def test_forgotten_memory_counted_in_stats():
     """Deleted memories should show in stats as deleted."""
     s = stats()
     assert s["deleted"] > 0, f"Expected deleted > 0, got {s['deleted']}"
+
 
 test("Deleted memories counted in stats", test_forgotten_memory_counted_in_stats)
 
@@ -305,6 +331,7 @@ def test_forgotten_memory_not_in_search():
     found_ids = [r["memory_id"] for r in results["results"]]
     assert mid not in found_ids, "Deleted memory should not appear in search"
 
+
 test("Forgotten memory not in search results", test_forgotten_memory_not_in_search)
 
 
@@ -313,20 +340,26 @@ print("\n🧠 TEST 5: Knowledge Graph & Spreading Activation")
 print("=" * 55)
 # ═══════════════════════════════════════════════════════
 
+
 def test_graph_concepts_and_relations():
     """Concepts and relations should be stored and queryable."""
     c.post("/v1/graph/concepts", json={"name": "Docker", "type": "tool", "activation": 0.9})
     c.post("/v1/graph/concepts", json={"name": "Containers", "type": "concept"})
     c.post("/v1/graph/concepts", json={"name": "Kubernetes", "type": "tool"})
 
-    c.post("/v1/graph/relations", json={
-        "source": "Docker", "target": "Containers",
-        "relation_type": "IS_A", "weight": 0.95
-    })
-    c.post("/v1/graph/relations", json={
-        "source": "Kubernetes", "target": "Containers",
-        "relation_type": "USED_FOR", "weight": 0.9
-    })
+    c.post(
+        "/v1/graph/relations",
+        json={"source": "Docker", "target": "Containers", "relation_type": "IS_A", "weight": 0.95},
+    )
+    c.post(
+        "/v1/graph/relations",
+        json={
+            "source": "Kubernetes",
+            "target": "Containers",
+            "relation_type": "USED_FOR",
+            "weight": 0.9,
+        },
+    )
 
     # Query Docker — should see Containers relation
     r = c.get("/v1/graph/concepts/Docker")
@@ -335,16 +368,13 @@ def test_graph_concepts_and_relations():
     assert data["name"] == "Docker"
     assert len(data["relationships"]) >= 1
 
+
 test("Graph stores concepts and relations", test_graph_concepts_and_relations)
 
 
 def test_spreading_activation_finds_related():
     """Spreading activation from Docker should find Containers and Kubernetes."""
-    r = c.post("/v1/graph/search", json={
-        "active_concepts": ["Docker"],
-        "depth": 2,
-        "limit": 10
-    })
+    r = c.post("/v1/graph/search", json={"active_concepts": ["Docker"], "depth": 2, "limit": 10})
     assert r.status_code == 200
     data = r.json()
     names = [d["name"] for d in data]
@@ -353,24 +383,20 @@ def test_spreading_activation_finds_related():
     # Kubernetes is 2 hops away (Docker→Containers←Kubernetes), should be reachable at depth 2
     # but depends on graph structure
 
+
 test("Spreading activation finds related concepts", test_spreading_activation_finds_related)
 
 
 def test_spreading_activation_weights():
     """Closer/stronger connections should have higher spread weight."""
-    r = c.post("/v1/graph/search", json={
-        "active_concepts": ["Docker"],
-        "depth": 2,
-        "limit": 10
-    })
+    r = c.post("/v1/graph/search", json={"active_concepts": ["Docker"], "depth": 2, "limit": 10})
     data = r.json()
 
     if len(data) >= 2:
         weights = [d["path_weight"] for d in data]
         # Should be sorted descending (the query orders by weight)
-        assert weights == sorted(weights, reverse=True), (
-            f"Spread weights not sorted: {weights}"
-        )
+        assert weights == sorted(weights, reverse=True), f"Spread weights not sorted: {weights}"
+
 
 test("Spreading activation respects connection weights", test_spreading_activation_weights)
 
@@ -379,6 +405,7 @@ test("Spreading activation respects connection weights", test_spreading_activati
 print("\n🧠 TEST 6: Consolidation Logic")
 print("=" * 55)
 # ═══════════════════════════════════════════════════════
+
 
 def test_consolidation_downscales_activation():
     """Prune phase should reduce all activations by 0.9 factor."""
@@ -402,12 +429,9 @@ def test_consolidation_downscales_activation():
     after1 = inspect(m1["memory_id"])["activation"]
     after2 = inspect(m2["memory_id"])["activation"]
 
-    assert after1 < before1, (
-        f"Memory 1 activation should decrease: {before1:.3f} → {after1:.3f}"
-    )
-    assert after2 < before2, (
-        f"Memory 2 activation should decrease: {before2:.3f} → {after2:.3f}"
-    )
+    assert after1 < before1, f"Memory 1 activation should decrease: {before1:.3f} → {after1:.3f}"
+    assert after2 < before2, f"Memory 2 activation should decrease: {before2:.3f} → {after2:.3f}"
+
 
 test("Consolidation prune downscales activations", test_consolidation_downscales_activation)
 
@@ -428,6 +452,7 @@ def test_consolidation_report_complete():
         assert isinstance(data[key], int), f"{key} should be int, got {type(data[key])}"
         assert data[key] >= 0, f"{key} should be >= 0, got {data[key]}"
 
+
 test("Consolidation report has all 4 phases", test_consolidation_report_complete)
 
 
@@ -435,6 +460,7 @@ test("Consolidation report has all 4 phases", test_consolidation_report_complete
 print("\n🧠 TEST 7: Strategic Forgetting")
 print("=" * 55)
 # ═══════════════════════════════════════════════════════
+
 
 def test_strategic_prune_targets_irrelevant():
     """Strategic prune with goals should weaken irrelevant memories."""
@@ -448,10 +474,13 @@ def test_strategic_prune_targets_irrelevant():
     before_irr = inspect(m_irrelevant["memory_id"])["activation"]
 
     # Prune with Python/ML goals
-    r = c.post("/v1/memories/forget-strategy", json={
-        "strategy": "strategic_prune",
-        "params": {"goals": ["Python", "machine", "learning", "algorithms"]}
-    })
+    r = c.post(
+        "/v1/memories/forget-strategy",
+        json={
+            "strategy": "strategic_prune",
+            "params": {"goals": ["Python", "machine", "learning", "algorithms"]},
+        },
+    )
     assert r.status_code == 200
     assert r.json()["memories_affected"] > 0
 
@@ -467,6 +496,7 @@ def test_strategic_prune_targets_irrelevant():
         f"Relevant should be unchanged: {before_rel:.3f} → {after_rel:.3f}"
     )
 
+
 test("Strategic prune weakens irrelevant, keeps relevant", test_strategic_prune_targets_irrelevant)
 
 
@@ -474,6 +504,7 @@ test("Strategic prune weakens irrelevant, keeps relevant", test_strategic_prune_
 print("\n🧠 TEST 8: Full Memory Lifecycle")
 print("=" * 55)
 # ═══════════════════════════════════════════════════════
+
 
 def test_complete_lifecycle():
     """
@@ -516,9 +547,8 @@ def test_complete_lifecycle():
     results = search("neural networks deep learning")
     if results["count"] >= 2:
         top_id = results["results"][0]["memory_id"]
-        assert top_id == m_strong["memory_id"], (
-            f"Expected strong memory at top, got {top_id}"
-        )
+        assert top_id == m_strong["memory_id"], f"Expected strong memory at top, got {top_id}"
+
 
 test("Complete lifecycle: store → access → decay → verify ranking", test_complete_lifecycle)
 
@@ -532,6 +562,7 @@ def test_memory_system_stats_coherent():
     )
     assert s["total"] > 0
     assert s["avg_activation"] != 0 or s["active"] == 0
+
 
 test("Stats are internally consistent", test_memory_system_stats_coherent)
 

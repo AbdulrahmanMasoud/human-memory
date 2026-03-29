@@ -44,7 +44,7 @@ class EmotionalSalience:
         delta: float = 0.1,
     ) -> None:
         self.alpha = alpha  # valence weight
-        self.beta = beta    # arousal weight
+        self.beta = beta  # arousal weight
         self.gamma = gamma  # goal relevance weight
         self.delta = delta  # novelty weight
 

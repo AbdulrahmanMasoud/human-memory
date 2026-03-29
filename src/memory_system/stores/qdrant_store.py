@@ -35,9 +35,7 @@ class QdrantMemoryStore:
         if not exists:
             self.client.create_collection(
                 collection_name=self.collection_name,
-                vectors_config=VectorParams(
-                    size=self.vector_size, distance=Distance.COSINE
-                ),
+                vectors_config=VectorParams(size=self.vector_size, distance=Distance.COSINE),
             )
 
     def upsert_memory(
@@ -82,11 +80,7 @@ class QdrantMemoryStore:
             collection_name=self.collection_name,
             query=query_vector,
             query_filter=Filter(
-                must=[
-                    FieldCondition(
-                        key="status", match=MatchValue(value=status)
-                    )
-                ]
+                must=[FieldCondition(key="status", match=MatchValue(value=status))]
             ),
             limit=limit,
         )
@@ -99,9 +93,7 @@ class QdrantMemoryStore:
             for r in results.points
         ]
 
-    def update_payload(
-        self, memory_id: uuid.UUID, payload: dict[str, object]
-    ) -> None:
+    def update_payload(self, memory_id: uuid.UUID, payload: dict[str, object]) -> None:
         """Update payload fields for a point."""
         self.client.set_payload(
             collection_name=self.collection_name,

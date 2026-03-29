@@ -36,5 +36,6 @@ models/
 .DS_Store
 Thumbs.db
 
-# Claude
-.claude/settings.local.json
+# Claude & Spec-kit
+.claude/
+.specify/

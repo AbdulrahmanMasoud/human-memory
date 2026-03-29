@@ -61,6 +61,7 @@ packages = ["src/memory_system"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["src"]
 asyncio_mode = "auto"
 markers = [
     "unit: Unit tests (no external services)",

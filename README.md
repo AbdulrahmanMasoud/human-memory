@@ -51,7 +51,7 @@ Like sleep, the system periodically:
 
 ```bash
 # Clone
-git clone https://github.com/<you>/human-memory.git
+git clone https://github.com/AbdulrahmanMasoud/human-memory.git
 cd human-memory
 
 # Configure

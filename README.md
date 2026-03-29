@@ -2,6 +2,8 @@
 
 A human-like memory system for AI agents based on the **ACT-R cognitive architecture**. Instead of treating all stored data equally, this system mimics how the human brain actually works — memories that are used often get stronger, unused ones fade away, emotional events stick longer, and general knowledge is extracted from repeated experiences.
 
+**Python SDK:** [`pip install human-memory-sdk`](https://pypi.org/project/human-memory-sdk/) — use the memory system from any Python app with 3 lines of code. See [SDK docs](sdk/README.md).
+
 ## How it works
 
 ```
@@ -176,6 +178,34 @@ All settings via environment variables (see `.env.example`):
 | `ACTR_DECAY_RATE` | `0.5` | ACT-R decay parameter (d) |
 | `ACTR_RETRIEVAL_THRESHOLD` | `-1.0` | Minimum activation for retrieval (τ) |
 | `WORKING_MEMORY_CAPACITY` | `7` | Max items in working memory |
+
+## Python SDK
+
+```bash
+pip install human-memory-sdk
+```
+
+```python
+from human_memory import Memory
+
+memory = Memory("http://localhost:8000")
+
+# Store
+memory.store("User prefers dark mode")
+
+# Search (ranked by ACT-R activation)
+results = memory.search("user preferences")
+
+# Knowledge graph
+memory.add_concept("Python", type="language")
+memory.spread(["Python"])  # → related concepts
+
+# Operations
+memory.decay()
+memory.consolidate()
+```
+
+Full SDK documentation: [sdk/README.md](sdk/README.md)
 
 ## Based on
 

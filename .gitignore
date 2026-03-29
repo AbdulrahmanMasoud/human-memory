@@ -42,6 +42,9 @@ frontend/dist/
 frontend/.vite/
 *.tsbuildinfo
 
+# SDK (separate repo)
+sdk/
+
 # Claude & Spec-kit
 .claude/
 .specify/

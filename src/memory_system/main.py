@@ -5,9 +5,11 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, Request
+import asyncio
+
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from memory_system.api.benchmark import router as benchmark_router
 from memory_system.api.dashboard import router as dashboard_router
@@ -31,6 +33,19 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Initialize stores and models on startup, cleanup on shutdown."""
     logger.info("Starting Human-Like Memory System...")
+
+    # Auto-create database tables if they don't exist
+    from sqlalchemy import create_engine
+
+    from memory_system.models.database import Base
+
+    try:
+        sync_engine = create_engine(settings.postgres_dsn.replace("+asyncpg", "+psycopg2"))
+        Base.metadata.create_all(sync_engine)
+        sync_engine.dispose()
+        logger.info("Database tables ready")
+    except Exception as e:
+        logger.warning("Table creation failed: %s", e)
 
     # Initialize embedding service (external API)
     embedding_service = EmbeddingService(
@@ -136,15 +151,6 @@ app.include_router(forgetting_router)
 app.include_router(dashboard_router)
 app.include_router(benchmark_router)
 
-DASHBOARD_PATH = Path(__file__).parent / "dashboard.html"
-
-
-@app.get("/", response_class=FileResponse, tags=["dashboard"])
-async def dashboard() -> FileResponse:
-    """Serve the frontend dashboard."""
-    return FileResponse(DASHBOARD_PATH, media_type="text/html")
-
-
 @app.get("/health", tags=["system"])
 async def health() -> dict[str, str]:
     """Liveness check — returns ok if the app process is running."""
@@ -185,3 +191,23 @@ async def ready(request: Request) -> dict[str, object]:
 
     all_ok = all(v == "ok" for k, v in checks.items() if k != "neo4j")
     return {"status": "ready" if all_ok else "degraded", "checks": checks}
+
+
+@app.websocket("/ws/stats")
+async def ws_stats(websocket: WebSocket) -> None:
+    """Push live stats to connected dashboard clients."""
+    await websocket.accept()
+    try:
+        service = websocket.app.state.memory_service
+        while True:
+            stats = await service.stats()
+            await websocket.send_json(stats.model_dump())
+            await asyncio.sleep(2)
+    except WebSocketDisconnect:
+        pass
+
+
+# Serve Vue frontend (must be last — catches all unmatched routes)
+FRONTEND_DIR = Path(__file__).parent.parent.parent / "frontend" / "dist"
+if FRONTEND_DIR.exists():
+    app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")

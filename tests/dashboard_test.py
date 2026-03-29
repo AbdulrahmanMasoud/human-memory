@@ -35,39 +35,19 @@ def test_dashboard_serves():
     assert r.status_code == 200
     assert "text/html" in r.headers["content-type"]
     assert "Human Memory" in r.text
-    assert "D3" in r.text or "d3" in r.text
+    assert '<div id="app">' in r.text
 
 
-test("GET / serves dashboard HTML", test_dashboard_serves)
+test("GET / serves Vue dashboard HTML", test_dashboard_serves)
 
 
-def test_dashboard_has_all_tabs():
+def test_dashboard_loads_js():
     r = c.get("/")
-    text = r.text
-    assert "panel-overview" in text
-    assert "panel-graph" in text
-    assert "panel-explorer" in text
-    assert "panel-controls" in text
-    assert "panel-benchmark" in text
+    # Vue SPA loads JS bundle
+    assert ".js" in r.text
 
 
-test("Dashboard has all 5 tabs", test_dashboard_has_all_tabs)
-
-
-def test_dashboard_has_d3():
-    r = c.get("/")
-    assert "d3@7" in r.text or "d3.js" in r.text
-
-
-test("Dashboard loads D3.js", test_dashboard_has_d3)
-
-
-def test_dashboard_has_chartjs():
-    r = c.get("/")
-    assert "chart.js" in r.text or "Chart" in r.text
-
-
-test("Dashboard loads Chart.js", test_dashboard_has_chartjs)
+test("Dashboard loads JS bundle", test_dashboard_loads_js)
 
 
 # ═══════════════════════════════════════════════════════
